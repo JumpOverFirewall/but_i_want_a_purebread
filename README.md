@@ -13,3 +13,23 @@ Modeling:
 
 Prediction: 
 1. Predict on the test data. 
+
+# Code to split train data to train and validation
+
+```
+import numpy as np
+import pandas as pd
+import glob
+import re
+
+np.random.seed(6)
+train = pd.read_csv('../input/train/train.csv')
+train = train.assign(train_mask = np.random.rand(len(train)) < 0.8)
+
+train_images = [re.sub(".*/", "", x) for x in glob.glob("../input/train_images/*.jpg")]
+train_images_df = pd.DataFrame({'file_name':train_images,
+                                'PetID':[re.sub("-.*", "", x) for x in train_images]})
+train_images_df = pd.merge(train_images_df, train[['PetID', 'AdoptionSpeed', 'train_mask']],
+                           how='left', on='PetID')
+train_images_df
+```
